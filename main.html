@@ -1,0 +1,139 @@
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<style type="text/css">
+			table, td{
+				border: 1px solid black;
+			}
+		</style>
+	</head>
+	<body onload="recalc();">
+		<!-- 
+    BMR for Men = 66.47 + (13.7 * weight [kg]) + (5 * size [cm]) − (6.8 * age [years])
+    BMR for Women = 655.1 + (9.6 * weight [kg]) + (1.8 * size [cm]) − (4.7 * age [years])
+
+    Little/no exercise: BMR * 1.2 = Total Calorie Need
+    Light exercise: BMR * 1.375 = Total Calorie Need
+    Moderate exercise (3-5 days/wk): BMR * 1.55 = Total Calorie Need
+    Very active (6-7 days/wk): BMR * 1.725 = Total Calorie Need
+    Extra active (very active & physical job): BMR * 1.9 = Total Calorie Need
+		 -->
+		age <input type="number" id="age" onchange="recalc();"> 
+		size (cm) <input type="number" id="size" onchange="recalc();"> 
+		sex <select id="sex" onchange="recalc();">
+			<option value="0">M</option>
+			<option value="1">F</option>
+		</select>
+		weight (kg) <input type="number" id="weight" onchange="recalc();"><hr>
+		basic BMR <span id="basic"></span><hr>
+
+		activity level <select id="activity" onchange="recalc();">
+			<option value="0">Little/no exercise</option>
+			<option value="1">Light exercise</option>
+			<option value="2">Moderate exercise (3-5 days/wk)</option>
+			<option value="3">Very active (6-7 days/wk)</option>
+			<option value="4">Extra active (very active & physical job)</option>
+		</select><hr>
+		calories consumption <span id="cals"></span> per day, <span id="week-cals"></span> per week<hr>
+		surplus per week <input type="number" id="surplus" onchange="recalc();"><br>
+		calories delta workout/rest days <input type="number" id="delta" onchange="recalc();"><br>
+		workout days per week <input type="number" id="workout" onchange="recalc();" min='1' max='6'><br>
+		workout day fat consumption (g) <input type="number" id="fat" onchange="recalc();" min='1' max='50'><br>
+		<hr>
+		<table>
+			<tr>
+				<td>Day</td>
+				<td>
+					<strong>Workout</strong>
+				</td>
+				<td>
+					<strong>Rest</strong>
+				</td>
+			</tr>
+				<td>Calories</td>
+				<td id="work-cal"></td>
+				<td id="rest-cal"></td>
+			<tr>
+				<td>Protein</td>
+				<td id="work-protein" colspan="2"></td>
+			</tr>
+			<tr>
+				<td>Carbs</td>
+				<td id="work-carb"></td>
+				<td id="rest-carb"></td>
+			</tr>
+			<tr>
+				<td>Fat</td>
+				<td id="work-fat"></td>
+				<td id="rest-fat"></td>
+			</tr>
+		</table>
+
+	</body>
+	<script type="text/javascript">
+		Number.prototype.fixed = function(digits) {
+			digits = digits || 0;
+			return this.toFixed(digits);
+		};
+		var ACTIVITY_COEFFS = [1.2, 1.375, 1.55, 1.725, 1.9];
+		function getByID(id){
+			return document.getElementById(id);
+		}
+		function getValByID(id){
+			return document.getElementById(id).value;
+		}
+		
+		function recalc() {
+			var age = Number(getValByID('age'));
+			var sex = Number(getValByID('sex'));
+			var size = Number(getValByID('size'));
+			var weight = Number(getValByID('weight'));
+
+			if(!age || isNaN(sex) || !size || !weight) return
+
+			var basic = sex === 0 ? 
+				(66.47 + (13.7 * weight) + (5 * size) - (6.8 * age))
+				: (655.1 + (9.6 * weight) + (1.8 * size) - (4.7 * age));
+
+			getByID('basic').innerHTML = basic.fixed(1);
+
+			var bmr = basic * ACTIVITY_COEFFS[getValByID('activity')];
+			getByID('cals').innerHTML = bmr.fixed(1);
+			var weekly = bmr * 7;
+			getByID('week-cals').innerHTML = weekly.fixed(1);
+
+			var surplus = Number(getValByID('surplus'));
+			var delta = Number(getValByID('delta'));
+			var workout = Number(getValByID('workout'));
+			var maxWorkFat = Number(getValByID('fat'));
+			
+			if(!workout) return
+			
+			var rest = 7 - workout;
+			var weekTotal = weekly + surplus;
+
+			var wCals = weekTotal / 7 + delta / 2;
+			var rCals = weekTotal / 7 - delta / 2;
+
+			var normFactor = (weekTotal - (wCals * workout + rCals * rest)) / 7;
+
+			wCals += normFactor;
+			rCals += normFactor;
+			// console.log(wCals, rCals);
+
+			var maxRestCarbs = weight;
+			var protein = weight * 2;
+
+			getByID('work-protein').innerHTML = protein.fixed(1);
+
+			getByID('work-fat').innerHTML = maxWorkFat.fixed(1);
+			getByID('rest-fat').innerHTML = ((rCals - protein * 4 - maxRestCarbs * 4) / 9).fixed(1);
+	
+			getByID('work-carb').innerHTML = ((wCals - protein * 4 - maxWorkFat * 9) / 4).fixed(1);
+			getByID('rest-carb').innerHTML = maxRestCarbs.fixed(1);
+
+			getByID('work-cal').innerHTML = wCals.fixed(1);
+			getByID('rest-cal').innerHTML = rCals.fixed(1);
+		}
+	</script>
+</html>
