@@ -73,6 +73,7 @@
 			calories delta workout/rest days <input type="number" id="delta" onchange="recalc();"><br>
 			workout days per week <input type="number" id="workout" onchange="recalc();" min='1' max='6'><br>
 			workout day fat consumption (g) <input type="number" id="fat" onchange="recalc();" min='1' max='50'><br>
+			protein = x<input type="number" id="proteinX" onchange="recalc();" min='0' max='10' value="2" step="0.05"> weight<br>
 		</div>
 			<hr>
 			<table>
@@ -169,6 +170,7 @@
 			var delta = Number(getValByID('delta'));
 			var workout = Number(getValByID('workout'));
 			var maxWorkFat = Number(getValByID('fat'));
+			var kProtein = Number(getValByID('proteinX'));
 			
 			if(!workout) return
 			
@@ -185,7 +187,7 @@
 			// console.log(wCals, rCals);
 
 			var maxRestCarbs = weight;
-			var protein = weight * 2;
+			var protein = weight * kProtein;
 
 			getByID('work-protein').innerHTML = protein.fixed(1);
 
