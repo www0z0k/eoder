@@ -67,14 +67,14 @@
 		basic BMR <span id="basic"></span><hr>
 		calories consumption <span id="cals"></span> per day, <span id="week-cals"></span> per week<hr>
 
-		<strong class="collapse" data-for="main-data">workouts & calories</strong>
-		<div id="main-data" class="collapsible">
-			surplus per week <input type="number" id="surplus" onchange="recalc();"><br>
+		<hr>
+		surplus per week <input type="number" id="surplus" onchange="recalc();"><br>
+		protein = <input type="number" id="proteinX" onchange="recalc();" min='0' max='10' value="2" step="0.05"> x weight<br>
+		<strong class="collapse" data-for="eod-data">EOD data</strong>
+		<div id="eod-data" class="collapsible">
 			calories delta workout/rest days <input type="number" id="delta" onchange="recalc();"><br>
 			workout days per week <input type="number" id="workout" onchange="recalc();" min='1' max='6'><br>
 			workout day fat consumption (g) <input type="number" id="fat" onchange="recalc();" min='1' max='50'><br>
-			protein = x<input type="number" id="proteinX" onchange="recalc();" min='0' max='10' value="2" step="0.05"> weight<br>
-		</div>
 			<hr>
 			<table>
 				<tr>
@@ -86,9 +86,11 @@
 						<strong>Rest</strong>
 					</td>
 				</tr>
+				<tr>
 					<td>Calories</td>
 					<td id="work-cal"></td>
 					<td id="rest-cal"></td>
+				</tr>
 				<tr>
 					<td>Protein</td>
 					<td id="work-protein" colspan="2"></td>
@@ -102,6 +104,31 @@
 					<td>Fat</td>
 					<td id="work-fat"></td>
 					<td id="rest-fat"></td>
+				</tr>
+			</table>
+		</div>
+		<br>
+		<hr>
+		<strong class="collapse" data-for="plain-food">plain food</strong>
+		<div id="plain-food" class="collapsible">
+			fat = <input type="number" id="plain-fat" onchange="recalc();" min='0' max='10' step="0.05"> x weight<br>
+			<hr>
+			<table>				
+				<tr>
+					<td>Calories</td>
+					<td id="plain-cal"></td>
+				</tr>
+				<tr>
+					<td>Protein</td>
+					<td id="plain-protein" colspan="2"></td>
+				</tr>
+				<tr>
+					<td>Carbs</td>
+					<td id="plain-carb"></td>
+				</tr>
+				<tr>
+					<td>Fat</td>
+					<td id="plain-fat-res"></td>
 				</tr>
 			</table>
 		</div>
@@ -199,6 +226,17 @@
 
 			getByID('work-cal').innerHTML = wCals.fixed(1);
 			getByID('rest-cal').innerHTML = rCals.fixed(1);
+
+			var plainFat = Number(getValByID('plain-fat')) * weight;
+			if(isNaN(plainFat))return
+
+			var dailyKCal = bmr + surplus / 7;
+
+			getByID('plain-cal').innerHTML = dailyKCal.fixed(1);
+			getByID('plain-protein').innerHTML = protein.fixed(1);
+			getByID('plain-carb').innerHTML = ((dailyKCal - protein * 4 - plainFat * 9) / 4).fixed(1);
+			getByID('plain-fat-res').innerHTML = plainFat.fixed(1);
+
 		}
 	</script>
 </html>
