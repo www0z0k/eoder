@@ -199,44 +199,46 @@
 			var maxWorkFat = Number(getValByID('fat'));
 			var kProtein = Number(getValByID('proteinX'));
 			
-			if(!workout) return
-			
-			var rest = 7 - workout;
-			var weekTotal = weekly + surplus;
-
-			var wCals = weekTotal / 7 + delta / 2;
-			var rCals = weekTotal / 7 - delta / 2;
-
-			var normFactor = (weekTotal - (wCals * workout + rCals * rest)) / 7;
-
-			wCals += normFactor;
-			rCals += normFactor;
-			// console.log(wCals, rCals);
-
-			var maxRestCarbs = weight;
 			var protein = weight * kProtein;
+			
+			if(workout) {			
+				var rest = 7 - workout;
+				var weekTotal = weekly + surplus;
 
-			getByID('work-protein').innerHTML = protein.fixed(1);
+				var wCals = weekTotal / 7 + delta / 2;
+				var rCals = weekTotal / 7 - delta / 2;
 
-			getByID('work-fat').innerHTML = maxWorkFat.fixed(1);
-			getByID('rest-fat').innerHTML = ((rCals - protein * 4 - maxRestCarbs * 4) / 9).fixed(1);
-	
-			getByID('work-carb').innerHTML = ((wCals - protein * 4 - maxWorkFat * 9) / 4).fixed(1);
-			getByID('rest-carb').innerHTML = maxRestCarbs.fixed(1);
+				var normFactor = (weekTotal - (wCals * workout + rCals * rest)) / 7;
 
-			getByID('work-cal').innerHTML = wCals.fixed(1);
-			getByID('rest-cal').innerHTML = rCals.fixed(1);
+				wCals += normFactor;
+				rCals += normFactor;
+				// console.log(wCals, rCals);
 
+				var maxRestCarbs = weight;
+
+				getByID('work-protein').innerHTML = protein.fixed(1);
+
+				getByID('work-fat').innerHTML = maxWorkFat.fixed(1);
+				getByID('rest-fat').innerHTML = ((rCals - protein * 4 - maxRestCarbs * 4) / 9).fixed(1);
+		
+				getByID('work-carb').innerHTML = ((wCals - protein * 4 - maxWorkFat * 9) / 4).fixed(1);
+				getByID('rest-carb').innerHTML = maxRestCarbs.fixed(1);
+
+				getByID('work-cal').innerHTML = wCals.fixed(1);
+				getByID('rest-cal').innerHTML = rCals.fixed(1);
+
+			}
+			
 			var plainFat = Number(getValByID('plain-fat')) * weight;
-			if(isNaN(plainFat))return
+			if(!isNaN(plainFat)){
 
-			var dailyKCal = bmr + surplus / 7;
+				var dailyKCal = bmr + surplus / 7;
 
-			getByID('plain-cal').innerHTML = dailyKCal.fixed(1);
-			getByID('plain-protein').innerHTML = protein.fixed(1);
-			getByID('plain-carb').innerHTML = ((dailyKCal - protein * 4 - plainFat * 9) / 4).fixed(1);
-			getByID('plain-fat-res').innerHTML = plainFat.fixed(1);
-
+				getByID('plain-cal').innerHTML = dailyKCal.fixed(1);
+				getByID('plain-protein').innerHTML = protein.fixed(1);
+				getByID('plain-carb').innerHTML = ((dailyKCal - protein * 4 - plainFat * 9) / 4).fixed(1);
+				getByID('plain-fat-res').innerHTML = plainFat.fixed(1);
+			}
 		}
 	</script>
 </html>
